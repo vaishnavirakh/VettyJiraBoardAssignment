@@ -1,0 +1,636 @@
+<div class="jira-wrapper">
+
+  <!-- HEADER -->
+  <div class="board-header">
+
+    <div class="header-left">
+
+      <div class="jira-logo">
+        <i class="bi bi-kanban-fill"></i>
+      </div>
+
+      <div>
+        <h2>Jira Board</h2>
+
+        <span class="board-subtitle">
+          Assignment Management
+        </span>
+      </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+      <!-- SEARCH -->
+      <div class="search-box">
+
+        <i class="bi bi-search search-icon"></i>
+
+        <input
+          type="text"
+          placeholder="Search issues..."
+          [(ngModel)]="searchText"
+        />
+
+        <button
+          *ngIf="searchText"
+          type="button"
+          class="clear-search"
+          (click)="clearSearch()"
+        >
+          <i class="bi bi-x-circle"></i>
+        </button>
+
+      </div>
+
+
+      <!-- ADD LIST -->
+      <button
+        type="button"
+        class="add-list-btn"
+        (click)="openListModal()"
+      >
+        <i class="bi bi-plus-lg"></i>
+        Add List
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- BOARD -->
+  <div class="board-container">
+
+    <div class="board">
+
+      <!-- LIST -->
+      <div
+        class="column-wrapper"
+        *ngFor="let item of listArray; let i = index"
+      >
+
+        <div
+          class="maincard"
+          [class.drag-over]="dragOverListIndex === i"
+
+          (dragover)="allowDrop($event, i)"
+
+          (dragleave)="dragLeave(i)"
+
+          (drop)="drop($event, i)"
+        >
+
+          <!-- COLUMN HEADER -->
+          <div class="column-header">
+
+            <div class="column-title">
+
+              <span
+                class="status-dot"
+                [ngClass]="getStatusClass(item.name)"
+              ></span>
+
+              <h5>
+                {{ item.name }}
+              </h5>
+
+              <span class="issue-count">
+                {{ getVisibleItems(item).length }}
+              </span>
+
+            </div>
+
+
+            <div class="column-actions">
+
+              <button
+                type="button"
+                class="icon-btn"
+                title="Delete list"
+
+                (click)="removeList(i)"
+              >
+                <i class="bi bi-trash3"></i>
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div class="column-divider"></div>
+
+
+          <!-- ISSUES -->
+          <div class="issues-container">
+
+            <div
+              *ngFor="let itemlist of getVisibleItems(item)"
+              class="issue-card"
+            >
+
+              <!-- TOP -->
+              <div class="issue-top">
+
+                <span
+                  class="priority"
+                  [ngClass]="getPriorityClass(itemlist.priority)"
+                >
+
+                  <i
+                    class="bi"
+                    [ngClass]="getPriorityIcon(itemlist.priority)"
+                  ></i>
+
+                  {{ itemlist.priority }}
+
+                </span>
+
+
+                <!-- DRAG HANDLE -->
+                <span
+                  class="drag-icon"
+                  draggable="true"
+
+                  title="Drag issue"
+
+                  (dragstart)="
+                    drag(
+                      $event,
+                      itemlist,
+                      i,
+                      getOriginalIndex(item, itemlist)
+                    )
+                  "
+
+                  (dragend)="dragEnd()"
+                >
+                  <i class="bi bi-grip-vertical"></i>
+                </span>
+
+              </div>
+
+
+              <!-- META -->
+              <div class="issue-meta">
+
+                <span class="issue-id">
+                  {{ itemlist.id }}
+                </span>
+
+                <span class="story-points">
+
+                  <i class="bi bi-lightning-charge-fill"></i>
+
+                  {{ itemlist.storyPoints || 0 }}
+
+                </span>
+
+              </div>
+
+
+              <!-- TITLE -->
+              <h6 class="issue-title">
+                {{ itemlist.name }}
+              </h6>
+
+
+              <!-- DESCRIPTION -->
+              <p class="issue-description">
+                {{ itemlist.description }}
+              </p>
+
+
+              <!-- ACTIONS -->
+              <div class="issue-footer">
+
+                <div class="issue-actions">
+
+                  <!-- EDIT -->
+                  <button
+                    type="button"
+                    class="card-action edit"
+                    title="Edit issue"
+
+                    (click)="
+                      onEditIssue(
+                        $event,
+                        itemlist,
+                        i,
+                        getOriginalIndex(item, itemlist)
+                      )
+                    "
+                  >
+
+                    <i class="bi bi-pencil-fill"></i>
+
+                  </button>
+
+
+                  <!-- DELETE -->
+                  <button
+                    type="button"
+                    class="card-action delete"
+                    title="Delete issue"
+
+                    (click)="
+                      onDeleteIssue(
+                        $event,
+                        i,
+                        getOriginalIndex(item, itemlist)
+                      )
+                    "
+                  >
+
+                    <i class="bi bi-trash3-fill"></i>
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- EMPTY STATE -->
+            <div
+              class="empty-state"
+              *ngIf="getVisibleItems(item).length === 0"
+            >
+
+              <i class="bi bi-inbox"></i>
+
+              <span>
+                {{
+                  searchText
+                    ? 'No issues found'
+                    : 'No issues yet'
+                }}
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- COLUMN FOOTER -->
+          <div class="column-footer">
+
+            <button
+              type="button"
+              class="add-issue-btn"
+              (click)="openIssueModal(i)"
+            >
+
+              <i class="bi bi-plus-lg"></i>
+
+              Add issue
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ADD COLUMN -->
+      <div class="add-column-placeholder">
+
+        <button
+          type="button"
+          class="add-column-card"
+          (click)="openListModal()"
+        >
+
+          <i class="bi bi-plus-circle"></i>
+
+          <span>
+            Add another list
+          </span>
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- CREATE LIST MODAL -->
+<!-- ===================================================== -->
+
+<div
+  class="custom-modal-backdrop"
+
+  *ngIf="showListModal"
+
+  (click)="closeListModal()"
+>
+
+  <div
+    class="custom-modal"
+
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- HEADER -->
+    <div class="modal-header">
+
+      <div>
+
+        <h5 class="modal-title">
+          Create new list
+        </h5>
+
+        <small>
+          Add a new workflow column
+        </small>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="modal-close"
+
+        (click)="closeListModal()"
+      >
+
+        <i class="bi bi-x-lg"></i>
+
+      </button>
+
+    </div>
+
+
+    <!-- BODY -->
+    <div class="modal-body">
+
+      <label class="form-label">
+        List name
+      </label>
+
+      <input
+        type="text"
+        class="form-control custom-input"
+
+        placeholder="e.g. Testing"
+
+        [(ngModel)]="listname"
+
+        (keyup.enter)="submitList()"
+      />
+
+    </div>
+
+
+    <!-- FOOTER -->
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="cancel-btn"
+
+        (click)="closeListModal()"
+      >
+        Cancel
+      </button>
+
+
+      <button
+        type="button"
+        class="primary-btn"
+
+        (click)="submitList()"
+      >
+
+        <i class="bi bi-plus-lg"></i>
+
+        Create list
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- CREATE / EDIT ISSUE MODAL -->
+<!-- ===================================================== -->
+
+<div
+  class="custom-modal-backdrop"
+
+  *ngIf="showIssueModal"
+
+  (click)="closeIssueModal()"
+>
+
+  <div
+    class="custom-modal issue-modal"
+
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- HEADER -->
+    <div class="modal-header">
+
+      <div>
+
+        <h5 class="modal-title">
+
+          {{
+            editingIssue
+              ? 'Edit issue'
+              : 'Create issue'
+          }}
+
+        </h5>
+
+        <small>
+          Add details for your task
+        </small>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="modal-close"
+
+        (click)="closeIssueModal()"
+      >
+
+        <i class="bi bi-x-lg"></i>
+
+      </button>
+
+    </div>
+
+
+    <!-- BODY -->
+    <div class="modal-body">
+
+      <!-- ISSUE NAME -->
+      <div class="form-group">
+
+        <label class="form-label">
+          Issue name
+        </label>
+
+        <input
+          type="text"
+          class="form-control custom-input"
+
+          placeholder="Enter issue name"
+
+          [(ngModel)]="issue.issuename"
+        />
+
+      </div>
+
+
+      <!-- DESCRIPTION -->
+      <div class="form-group">
+
+        <label class="form-label">
+          Description
+        </label>
+
+        <textarea
+          class="form-control custom-input"
+
+          rows="4"
+
+          placeholder="Describe the issue..."
+
+          [(ngModel)]="issue.description"
+        ></textarea>
+
+      </div>
+
+
+      <!-- PRIORITY -->
+      <div class="form-group">
+
+        <label class="form-label">
+          Priority
+        </label>
+
+        <select
+          class="form-select custom-input"
+
+          [(ngModel)]="issue.priority"
+        >
+
+          <option value="High">
+            High
+          </option>
+
+          <option value="Medium">
+            Medium
+          </option>
+
+          <option value="Low">
+            Low
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- STORY POINTS -->
+      <div class="form-group">
+
+        <label class="form-label">
+          Story Points
+        </label>
+
+        <div class="story-points-input">
+
+          <i class="bi bi-lightning-charge-fill"></i>
+
+          <input
+            type="number"
+
+            class="form-control custom-input"
+
+            placeholder="Enter story points"
+
+            min="0"
+
+            step="1"
+
+            [(ngModel)]="issue.storyPoints"
+          />
+
+        </div>
+
+        <small class="field-hint">
+          Estimate the complexity of this issue.
+        </small>
+
+      </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="cancel-btn"
+
+        (click)="closeIssueModal()"
+      >
+        Cancel
+      </button>
+
+
+      <button
+        type="button"
+        class="primary-btn"
+
+        (click)="submitIssue()"
+      >
+
+        <i
+          class="bi"
+
+          [ngClass]="
+            editingIssue
+              ? 'bi-check-lg'
+              : 'bi-plus-lg'
+          "
+        ></i>
+
+
+        {{
+          editingIssue
+            ? 'Update issue'
+            : 'Create issue'
+        }}
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
