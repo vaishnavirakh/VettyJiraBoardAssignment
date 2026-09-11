@@ -49,11 +49,6 @@ interface JiraList {
 
 export class JiraboardComponent implements OnInit {
 
-
-  /* =====================================================
-     BOARD DATA
-  ===================================================== */
-
   listArray: JiraList[] = [
 
     {
@@ -136,26 +131,11 @@ export class JiraboardComponent implements OnInit {
 
   ];
 
-
-  /* =====================================================
-     SEARCH
-  ===================================================== */
-
   searchText = '';
-
-
-  /* =====================================================
-     LIST MODAL
-  ===================================================== */
 
   showListModal = false;
 
   listname = '';
-
-
-  /* =====================================================
-     ISSUE MODAL
-  ===================================================== */
 
   showIssueModal = false;
 
@@ -188,17 +168,8 @@ export class JiraboardComponent implements OnInit {
 
   };
 
-
-  /* =====================================================
-     ISSUE ID COUNTER
-  ===================================================== */
-
   issueCounter = 104;
 
-
-  /* =====================================================
-     DRAG DATA
-  ===================================================== */
 
   dragData: JiraIssue | null = null;
 
@@ -208,10 +179,6 @@ export class JiraboardComponent implements OnInit {
 
   dragOverListIndex = -1;
 
-
-  /* =====================================================
-     INIT
-  ===================================================== */
 
   ngOnInit(): void {
 
@@ -280,10 +247,6 @@ export class JiraboardComponent implements OnInit {
   }
 
 
-  /* =====================================================
-     SAVE BOARD
-  ===================================================== */
-
   private saveBoard(): void {
 
     localStorage.setItem(
@@ -298,10 +261,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     ISSUE COUNTER
-  ===================================================== */
 
   private updateIssueCounter(): void {
 
@@ -350,10 +309,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     SEARCH
-  ===================================================== */
 
   getVisibleItems(
     list: JiraList
@@ -420,9 +375,7 @@ export class JiraboardComponent implements OnInit {
   }
 
 
-  /* =====================================================
-     ORIGINAL INDEX
-  ===================================================== */
+  
 
   getOriginalIndex(
     list: JiraList,
@@ -434,11 +387,6 @@ export class JiraboardComponent implements OnInit {
     );
 
   }
-
-
-  /* =====================================================
-     LIST MODAL
-  ===================================================== */
 
   openListModal(): void {
 
@@ -457,10 +405,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     CREATE LIST
-  ===================================================== */
 
   submitList(): void {
 
@@ -524,11 +468,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     DELETE LIST
-  ===================================================== */
-
   removeList(
     index: number
   ): void {
@@ -566,11 +505,6 @@ export class JiraboardComponent implements OnInit {
     this.saveBoard();
 
   }
-
-
-  /* =====================================================
-     OPEN CREATE ISSUE MODAL
-  ===================================================== */
 
   openIssueModal(
     listIndex: number
@@ -610,11 +544,6 @@ export class JiraboardComponent implements OnInit {
     this.showIssueModal = true;
 
   }
-
-
-  /* =====================================================
-     EDIT ISSUE
-  ===================================================== */
 
   editIssue(
     item: JiraIssue,
@@ -680,11 +609,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     EDIT BUTTON HANDLER
-  ===================================================== */
-
   onEditIssue(
     event: MouseEvent,
     item: JiraIssue,
@@ -705,11 +629,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     DELETE BUTTON HANDLER
-  ===================================================== */
-
   onDeleteIssue(
     event: MouseEvent,
     listIndex: number,
@@ -728,10 +647,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     CLOSE ISSUE MODAL
-  ===================================================== */
 
   closeIssueModal(): void {
 
@@ -758,10 +673,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     CREATE / UPDATE ISSUE
-  ===================================================== */
 
   submitIssue(): void {
 
@@ -822,10 +733,6 @@ export class JiraboardComponent implements OnInit {
 
     }
 
-
-    /* =================================================
-       UPDATE EXISTING ISSUE
-    ================================================= */
 
     if (this.editingIssue) {
 
@@ -888,10 +795,6 @@ export class JiraboardComponent implements OnInit {
     }
 
 
-    /* =================================================
-       CREATE NEW ISSUE
-    ================================================= */
-
     const list =
       this.listArray[
         this.editingListIndex
@@ -942,11 +845,6 @@ export class JiraboardComponent implements OnInit {
     this.closeIssueModal();
 
   }
-
-
-  /* =====================================================
-     DELETE ISSUE
-  ===================================================== */
 
   removeItems(
     listIndex: number,
@@ -999,10 +897,6 @@ export class JiraboardComponent implements OnInit {
   }
 
 
-  /* =====================================================
-     DRAG START
-  ===================================================== */
-
   drag(
     event: DragEvent,
     item: JiraIssue,
@@ -1038,10 +932,6 @@ export class JiraboardComponent implements OnInit {
   }
 
 
-  /* =====================================================
-     ALLOW DROP
-  ===================================================== */
-
   allowDrop(
     event: DragEvent,
     listIndex: number
@@ -1063,11 +953,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     DRAG LEAVE
-  ===================================================== */
-
   dragLeave(
     listIndex: number
   ): void {
@@ -1084,10 +969,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     DROP
-  ===================================================== */
 
   drop(
     event: DragEvent,
@@ -1196,20 +1077,11 @@ export class JiraboardComponent implements OnInit {
   }
 
 
-  /* =====================================================
-     DRAG END
-  ===================================================== */
-
   dragEnd(): void {
 
     this.clearDragData();
 
   }
-
-
-  /* =====================================================
-     CLEAR DRAG
-  ===================================================== */
 
   private clearDragData(): void {
 
@@ -1223,10 +1095,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     PRIORITY CLASS
-  ===================================================== */
 
   getPriorityClass(
     priority: string
@@ -1255,9 +1123,6 @@ export class JiraboardComponent implements OnInit {
   }
 
 
-  /* =====================================================
-     PRIORITY ICON
-  ===================================================== */
 
   getPriorityIcon(
     priority: string
@@ -1286,9 +1151,7 @@ export class JiraboardComponent implements OnInit {
   }
 
 
-  /* =====================================================
-     STATUS CLASS
-  ===================================================== */
+
 
   getStatusClass(
     name: string
@@ -1322,10 +1185,6 @@ export class JiraboardComponent implements OnInit {
 
   }
 
-
-  /* =====================================================
-     GENERATE ID
-  ===================================================== */
 
   private generateId(): string {
 
